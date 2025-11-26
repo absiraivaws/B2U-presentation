@@ -1,0 +1,798 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>B2U.App – Driving LankaQR Merchant Transactions</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-dark: #1d4ed8;
+      --accent: #06b6d4;
+      --bg: #0f172a;
+      --card-bg: #0b1220;
+      --text-main: #e5e7eb;
+      --text-soft: #9ca3af;
+      --border-subtle: #1f2937;
+      --success: #22c55e;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    body {
+      background: radial-gradient(circle at top, #1f2937, #020617);
+      color: var(--text-main);
+      line-height: 1.6;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    .page {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 1.5rem 1.25rem 3rem;
+    }
+
+    /* Header / Nav */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.75rem 0;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 700;
+      font-size: 1.1rem;
+    }
+
+    .logo-mark {
+      width: 32px;
+      height: 32px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--accent));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.8rem;
+      color: white;
+    }
+
+    .tagline {
+      font-size: 0.8rem;
+      color: var(--text-soft);
+    }
+
+    nav {
+      display: flex;
+      gap: 1.25rem;
+      font-size: 0.85rem;
+      color: var(--text-soft);
+    }
+
+    nav a:hover {
+      color: var(--text-main);
+    }
+
+    /* Hero */
+    .hero {
+      margin-top: 2.5rem;
+      display: grid;
+      grid-template-columns: minmax(0, 3fr) minmax(0, 2.2fr);
+      gap: 2rem;
+      align-items: center;
+    }
+
+    .hero-title {
+      font-size: clamp(2rem, 3vw, 2.6rem);
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      margin-bottom: 0.75rem;
+    }
+
+    .hero-title span {
+      background: linear-gradient(135deg, #60a5fa, #22c55e);
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+
+    .hero-subtitle {
+      font-size: 0.98rem;
+      color: var(--text-soft);
+      max-width: 34rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.78rem;
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      color: var(--text-soft);
+      margin-bottom: 0.9rem;
+    }
+
+    .pill-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 999px;
+      background: var(--success);
+    }
+
+    .hero-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .btn-primary {
+      padding: 0.6rem 1.4rem;
+      border-radius: 999px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      border: none;
+      color: white;
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: 0 15px 30px rgba(37, 99, 235, 0.35);
+    }
+
+    .btn-secondary {
+      padding: 0.6rem 1.2rem;
+      border-radius: 999px;
+      border: 1px solid var(--border-subtle);
+      background: rgba(15, 23, 42, 0.7);
+      color: var(--text-main);
+      font-size: 0.9rem;
+      cursor: pointer;
+    }
+
+    .hero-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      font-size: 0.78rem;
+      color: var(--text-soft);
+      margin-top: 0.5rem;
+    }
+
+    .hero-card {
+      background: radial-gradient(circle at top left, rgba(59, 130, 246, 0.35), transparent 55%),
+                  radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.25), transparent 55%),
+                  var(--card-bg);
+      border-radius: 1.25rem;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      padding: 1.5rem 1.25rem;
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.7);
+      font-size: 0.85rem;
+    }
+
+    .hero-card-title {
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.92rem;
+    }
+
+    .hero-card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 0.75rem 1.25rem;
+      margin-top: 1rem;
+    }
+
+    .hero-stat-label {
+      font-size: 0.75rem;
+      color: var(--text-soft);
+    }
+
+    .hero-stat-value {
+      font-size: 0.95rem;
+      font-weight: 600;
+    }
+
+    /* Sections */
+    section {
+      margin-top: 3rem;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .section-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+
+    .section-kicker {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 0.25rem;
+    }
+
+    .section-subtitle {
+      font-size: 0.85rem;
+      color: var(--text-soft);
+      max-width: 30rem;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      border: 1px solid var(--border-subtle);
+      padding: 1.1rem 1.1rem 1rem;
+      font-size: 0.88rem;
+    }
+
+    .card h3 {
+      font-size: 0.98rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .badge {
+      display: inline-block;
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+      color: var(--accent);
+      margin-bottom: 0.45rem;
+    }
+
+    ul {
+      padding-left: 1.1rem;
+      margin-top: 0.2rem;
+    }
+
+    li {
+      margin-bottom: 0.25rem;
+    }
+
+    .muted {
+      color: var(--text-soft);
+      font-size: 0.8rem;
+    }
+
+    /* How it works */
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      font-size: 0.86rem;
+    }
+
+    .step {
+      position: relative;
+      padding: 0.9rem;
+      border-radius: 0.9rem;
+      background: var(--card-bg);
+      border: 1px solid rgba(31, 41, 55, 0.9);
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      border-radius: 999px;
+      background: rgba(37, 99, 235, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.8);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.7rem;
+      margin-bottom: 0.35rem;
+      color: #bfdbfe;
+    }
+
+    .step-title {
+      font-size: 0.86rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+    }
+
+    /* Stakeholder grid */
+    .stakeholders {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 1rem;
+      font-size: 0.85rem;
+    }
+
+    .stakeholders h3 {
+      font-size: 0.9rem;
+      margin-bottom: 0.4rem;
+    }
+
+    .pill-small {
+      display: inline-flex;
+      align-items: center;
+      padding: 0.1rem 0.5rem;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.5);
+      font-size: 0.7rem;
+      color: var(--text-soft);
+      margin-bottom: 0.35rem;
+    }
+
+    /* CTA */
+    .cta {
+      margin-top: 3.5rem;
+      border-radius: 1.25rem;
+      padding: 1.4rem 1.2rem;
+      background: linear-gradient(135deg, rgba(37, 99, 235, 0.25), rgba(8, 47, 73, 0.9));
+      border: 1px solid rgba(96, 165, 250, 0.5);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 1rem;
+      align-items: center;
+      font-size: 0.9rem;
+    }
+
+    .cta-title {
+      font-weight: 600;
+      margin-bottom: 0.2rem;
+      font-size: 1rem;
+    }
+
+    .cta-sub {
+      font-size: 0.8rem;
+      color: #e0f2fe;
+    }
+
+    .cta-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    .contact-line {
+      font-size: 0.85rem;
+      margin-top: 0.4rem;
+    }
+
+    footer {
+      margin-top: 2.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-subtle);
+      font-size: 0.75rem;
+      color: var(--text-soft);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      .hero-card {
+        order: -1;
+      }
+
+      .steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .stakeholders {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 640px) {
+      .steps,
+      .stakeholders,
+      .grid-2 {
+        grid-template-columns: minmax(0, 1fr);
+      }
+
+      header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+      }
+
+      .hero-meta {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <header>
+      <div>
+        <div class="logo">
+          <div class="logo-mark">B2U</div>
+          <div>
+            B2U.App
+            <div class="tagline">LankaQR Growth Partner</div>
+          </div>
+        </div>
+      </div>
+      <nav>
+        <a href="#about">About</a>
+        <a href="#how-it-works">How it works</a>
+        <a href="#benefits">Benefits</a>
+        <a href="#target">Target Segments</a>
+        <a href="#contact">Contact</a>
+      </nav>
+    </header>
+
+    <!-- Hero -->
+    <section class="hero" id="top">
+      <div>
+        <div class="pill">
+          <span class="pill-dot"></span>
+          Fintech partner to banks, merchants & regulators in Sri Lanka
+        </div>
+        <h1 class="hero-title">
+          Increasing <span>LankaQR transactions</span> for under-utilised merchants.
+        </h1>
+        <p class="hero-subtitle">
+          B2U.App is a Sri Lankan fintech solution that helps banks, merchants, customers and regulators
+          move away from cash and grow digital payments, especially where QR usage is still very low.
+        </p>
+
+        <div class="hero-actions">
+          <button class="btn-primary" onclick="document.getElementById('benefits-bank').scrollIntoView({behavior:'smooth'})">
+            For Banks – View Benefits
+          </button>
+          <button class="btn-secondary" onclick="document.getElementById('benefits-merchants').scrollIntoView({behavior:'smooth'})">
+            For Merchants – View Benefits
+          </button>
+        </div>
+
+        <div class="hero-meta">
+          <div>
+            <strong>Focus:</strong> Under-performing QR merchants (below expected txn volume)
+          </div>
+          <div>
+            <strong>Location:</strong> Sri Lanka – aligned with CBSL & LankaQR framework
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-card">
+        <div class="hero-card-title">Why banks work with B2U.App</div>
+        <div class="muted">
+          Many merchants receive QR codes, but actual monthly transaction counts remain low.  
+          We specialise in activating and growing those QR journeys.
+        </div>
+        <div class="hero-card-grid">
+          <div>
+            <div class="hero-stat-label">Issued QR but low activity</div>
+            <div class="hero-stat-value">Merchants with &lt; 20,000 txns / month</div>
+          </div>
+          <div>
+            <div class="hero-stat-label">Our objective</div>
+            <div class="hero-stat-value">Increase active QR usage & revenue</div>
+          </div>
+          <div>
+            <div class="hero-stat-label">Model</div>
+            <div class="hero-stat-value">Bank-anchored, API-driven</div>
+          </div>
+          <div>
+            <div class="hero-stat-label">Scope</div>
+            <div class="hero-stat-value">P2M QR, P2P wallet & bill pay</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- About -->
+    <section id="about">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">About B2U.App</div>
+          <h2 class="section-title">Fintech support layer for your existing merchant base</h2>
+        </div>
+        <p class="section-subtitle">
+          We do not replace the bank. We enhance the bank’s LankaQR merchant base by driving digital adoption,
+          especially in cash-heavy, low-ticket, high-frequency segments.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <span class="badge">Problem in the market</span>
+          <ul>
+            <li>Banks have issued thousands of LankaQR codes, but many are under-utilised.</li>
+            <li>Merchants still depend on cash and petty change.</li>
+            <li>Customer awareness and confidence on QR is still developing.</li>
+            <li>Banks bear QR deployment costs but get low ROI where usage is low.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <span class="badge">Our solution</span>
+          <ul>
+            <li>Provide an engagement layer for merchants to create <strong>dynamic QR</strong>.</li>
+            <li>Verify payments in real time through bank APIs.</li>
+            <li>Send instant payment notifications to merchants.</li>
+            <li>Grow transaction counts, digital volumes and fee income, with minimal bank effort.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section id="how-it-works">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Process Flow</div>
+          <h2 class="section-title">How B2U.App works with your bank</h2>
+        </div>
+        <p class="section-subtitle">
+          Secure, API-driven and fully controlled by the bank. B2U.App acts as a digital growth partner
+          on top of your existing merchant accounts.
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-number">1</div>
+          <div class="step-title">Bank issues LankaQR</div>
+          <p>Banks continue to onboard merchants and issue LankaQR codes as usual, with all KYC and compliance handled by the bank.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">2</div>
+          <div class="step-title">B2U.App merchant enablement</div>
+          <p>The bank shares the registered merchant list and grants a secure API to B2U.App for transaction verification.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">3</div>
+          <div class="step-title">Dynamic QR creation</div>
+          <p>Merchants log in to B2U.App and can generate <strong>dynamic QR</strong> for each bill or trip, including amount and reference.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">4</div>
+          <div class="step-title">Customer payment</div>
+          <p>Customers scan the QR using their preferred banking app or wallet and pay directly to the merchant’s bank account.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">5</div>
+          <div class="step-title">API verification</div>
+          <p>B2U.App checks the transaction via the bank’s API and confirms if the payment is successful and credited.</p>
+        </div>
+        <div class="step">
+          <div class="step-number">6</div>
+          <div class="step-title">Instant merchant notification</div>
+          <p>Merchant receives real-time confirmation within B2U.App (and optional SMS / in-app alerts), reducing disputes and delays.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits -->
+    <section id="benefits">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Stakeholder Value</div>
+          <h2 class="section-title">Benefits for every participant in the ecosystem</h2>
+        </div>
+        <p class="section-subtitle">
+          One solution that creates value for merchants, customers, banks, CBSL, government and even the environment.
+        </p>
+      </div>
+
+      <!-- Merchants & Customers -->
+      <div class="grid-2" id="benefits-merchants">
+        <div class="card">
+          <h3>For Merchants</h3>
+          <p class="muted">Micro, small and medium merchants, transport & services.</p>
+          <ul>
+            <li>No need for petty cash or coins – exact amount collected via QR.</li>
+            <li>Avoid losses on small transactions (Rs. 300 per day and above accumulated).</li>
+            <li>Real-time credit to their existing bank account.</li>
+            <li>Verified transactions improve trust between merchant and customer.</li>
+            <li>Full transaction history at the bank – easier to prove turnover and apply for loans.</li>
+            <li>Lower cost compared to 3% card commission; less device cost and risk.</li>
+            <li>Any foreigner with a compatible app can pay easily via QR.</li>
+            <li>Zero risk of counterfeit notes or cash handling issues.</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>For Customers</h3>
+          <p class="muted">Everyday citizens travelling, shopping, and paying bills.</p>
+          <ul>
+            <li>No need to carry cash or cards – just use their mobile phone.</li>
+            <li>Seamless, fast QR payments with immediate confirmation.</li>
+            <li>Transactions authenticated through their trusted bank / wallet.</li>
+            <li>Clear digital records of even small value payments.</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Banks, CBSL, Govt, Nature -->
+      <section style="margin-top: 2rem;" id="benefits-bank">
+        <div class="stakeholders">
+          <div class="card">
+            <span class="pill-small">Banks</span>
+            <h3>New business & lower cost</h3>
+            <ul>
+              <li>We bring incremental QR transactions and new merchant activity to the bank.</li>
+              <li>Reduce cash handling risk, counting cost and physical transport cost.</li>
+              <li>Decrease branch/operations workload; more digital self-service.</li>
+              <li>Better visibility of customer & merchant transaction patterns.</li>
+              <li>Each transaction can generate fee income (e.g. 1% or agreed model).</li>
+              <li>Strengthen low-cost deposits (CASA) through digital inflows.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="pill-small">Central Bank (CBSL)</span>
+            <h3>Digital Sri Lanka acceleration</h3>
+            <ul>
+              <li>Less need to print, transport and destroy physical cash.</li>
+              <li>Supports CBSL’s digital payment and LankaQR roadmap.</li>
+              <li>Higher traceability and formalisation of the economy.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="pill-small">Government</span>
+            <h3>Efficient & localised payments</h3>
+            <ul>
+              <li>Reduced public-sector cash handling and related costs.</li>
+              <li>Better understanding of income patterns for taxation and policy.</li>
+              <li>No need to send commission fees overseas (Visa/Master) – more value stays in Sri Lanka.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="pill-small">Environment</span>
+            <h3>Green & sustainable</h3>
+            <ul>
+              <li>Digital transactions mean less physical cash printing and transport.</li>
+              <li>Supports global “green finance” and paperless initiatives.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="pill-small">Regulated & Bank-centric</span>
+            <h3>Safe model</h3>
+            <ul>
+              <li>All merchant funds remain with the bank – B2U.App is only a digital layer.</li>
+              <li>We operate in line with CBSL and LankaPay frameworks.</li>
+            </ul>
+          </div>
+
+          <div class="card">
+            <span class="pill-small">Revenue Model</span>
+            <h3>Aligned incentives</h3>
+            <ul>
+              <li>Revenue sharing can be linked to actual QR transactions.</li>
+              <li>Bank earns interchange/fee; B2U.App earns a portion for driving growth.</li>
+            </ul>
+          </div>
+        </div>
+      </section>
+    </section>
+
+    <!-- Target Segments -->
+    <section id="target">
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">Go-to-Market Focus</div>
+          <h2 class="section-title">Primary target groups for QR growth</h2>
+        </div>
+        <p class="section-subtitle">
+          We start with segments that are high-cash, high-frequency and perfect for dynamic QR use.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Transport & mobility</h3>
+          <ul>
+            <li>Drivers using hiring / ride-hailing apps.</li>
+            <li>Taxi and three-wheeler drivers.</li>
+            <li>Intercity and long-distance transport (e.g. Mannar–Colombo, Kandy–Matara).</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Everyday merchants & services</h3>
+          <ul>
+            <li>Small retailers, food stalls and groceries.</li>
+            <li>Delivery riders and service providers.</li>
+            <li>Micro-businesses where cash is currently dominant.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Bank partnership -->
+    <section>
+      <div class="section-header">
+        <div>
+          <div class="section-kicker">What we need from the bank</div>
+          <h2 class="section-title">Simple integration, maximum impact</h2>
+        </div>
+        <p class="section-subtitle">
+          B2U.App is designed to integrate with minimal effort from the bank’s IT and digital teams.
+        </p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Bank inputs</h3>
+          <ul>
+            <li>List of registered LankaQR merchants to be activated.</li>
+            <li>Secure API for real-time transaction verification.</li>
+            <li>Agreement on commercial model and scope.</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>What B2U.App handles</h3>
+          <ul>
+            <li>Merchant onboarding onto the B2U.App platform.</li>
+            <li>Dynamic QR generation tools and user experience.</li>
+            <li>Notification engine and merchant side support.</li>
+            <li>Awareness, training and ongoing engagement for high QR usage.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA / Contact -->
+    <section class="cta" id="contact">
+      <div>
+        <div class="cta-title">Ready to grow your LankaQR transactions?</div>
+        <div class="cta-sub">
+          We are happy to present this model in detail to your management, digital, payments and risk teams.
+        </div>
+        <div class="contact-line">
+          Contact: <strong>[Your Name / B2U.App Sri Lanka]</strong><br/>
+          Phone: <strong>[+94 XX XXX XXXX]</strong> &nbsp;|&nbsp; Email: <strong>[you@b2u.app]</strong>
+        </div>
+      </div>
+      <div class="cta-actions">
+        <button class="btn-primary" onclick="window.location.href='mailto:you@b2u.app'">
+          Schedule a bank presentation
+        </button>
+        <button class="btn-secondary" onclick="document.getElementById('how-it-works').scrollIntoView({behavior:'smooth'})">
+          View technical flow
+        </button>
+      </div>
+    </section>
+
+    <footer>
+      <div>© <span id="year"></span> B2U.App – Fintech support for LankaQR merchants.</div>
+      <div>Designed for banks, merchants and the Sri Lankan digital economy.</div>
+    </footer>
+  </div>
+
+  <script>
+    document.getElementById("year").textContent = new Date().getFullYear();
+  </script>
+</body>
+</html>
